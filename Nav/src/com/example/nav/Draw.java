@@ -115,336 +115,45 @@ public class Draw extends Activity {
 					c.drawLine((float) c.getWidth() / 2 + sfert, (float) c.getHeight(),
 							(float) c.getWidth() / 2 + sfert, c.getHeight() - ca * d[0] / 1000,
 							paintBlur);
+					float ax1 = c.getWidth() / 2 - sfert;
+					float ax2 = c.getWidth() / 2 + sfert;
 					float ax = c.getWidth() / 2;
+					float ay1 = c.getHeight() - ca * d[0] / 1000 - sfert;
+					float ay2 = c.getHeight() - ca * d[0] / 1000 + sfert;
 					float ay = c.getHeight() - ca * d[0] / 1000;
-					for (int i = 1; i < SharedVariables.directions.get(0).second - 1; i++) {
-						float di = distance((float) SharedVariables.points.get(i).latitude,
-								(float) SharedVariables.points.get(i).longitude,
-								(float) SharedVariables.points.get(i + 1).latitude,
-								(float) SharedVariables.points.get(i + 1).longitude);
-						System.out.println("Distance is " + di);
-						float angle = (float) angleBetween(SharedVariables.points.get(0),
-								SharedVariables.points.get(i + 1), SharedVariables.points.get(i));
-						System.out.println("Angle is " + angle + " cos = "
-								+ Math.cos(Math.toRadians(90 - angle)) + ", sin = "
-								+ Math.sin(Math.toRadians(90 - angle)));
-						c.drawLine(
-								ax - sfert,
-								ay,
-								(float) (ax + (ca * Math.cos(Math.toRadians(90 - angle)) * di) - sfert),
-								(float) (ay + (ca * Math.sin(Math.toRadians(90 - angle)) * di)), p);
-						c.drawLine(
-								ax - sfert,
-								ay,
-								(float) (ax + (ca * Math.cos(Math.toRadians(90 - angle)) * di) - sfert),
-								(float) (ay + (ca * Math.sin(Math.toRadians(90 - angle)) * di)),
-								paintBlur);
-						c.drawLine(
-								ax + sfert,
-								ay,
-								(float) (ax + (ca * Math.cos(Math.toRadians(90 - angle)) * di) + sfert),
-								(float) (ay + (ca * Math.sin(Math.toRadians(90 - angle)) * di)), p);
-						c.drawLine(
-								ax + sfert,
-								ay,
-								(float) (ax + (ca * Math.cos(Math.toRadians(90 - angle)) * di) + sfert),
-								(float) (ay + (ca * Math.sin(Math.toRadians(90 - angle)) * di)),
-								paintBlur);
-						ax = (float) (ax + ca * Math.cos(Math.toRadians(90 - angle)) * di);
-						ay = (float) (ay + ca * Math.sin(Math.toRadians(90 - angle)) * di);
+					for (int i = 2; i < SharedVariables.points.size() - 1; i++) {
+
+						float di = distance((float) SharedVariables.points.get(i - 1).latitude,
+								(float) SharedVariables.points.get(i - 1).longitude,
+								(float) SharedVariables.points.get(i).latitude,
+								(float) SharedVariables.points.get(i).longitude);
+						System.out.println("distance is : " + di);
+						float angle = (float) angleBetween(SharedVariables.points.get(i - 2),
+								SharedVariables.points.get(i), SharedVariables.points.get(i - 1));
+						System.out.println("angle is : " + angle);
+						float iangle = (float) angleBetween(SharedVariables.points.get(0),
+								SharedVariables.points.get(i), SharedVariables.points.get(i - 1));
+						System.out.println("iangle is : " + iangle);
+
+						float pointx = (float) (ax + (ca * Math.cos(Math.toRadians(90 - iangle)) * di));
+						System.out.println("point x = " + pointx);
+						float pointy = (float) (ay + (ca * Math.sin(Math.toRadians(90 - iangle)) * di));
+						System.out.println("point y = " + pointy);
+
+						System.out.println("Draw x from: " + ax2 + " to: "
+								+ (pointx + (float) Math.cos(Math.toRadians(angle)) * sfert));
+						System.out.println("Draw y from: " + ay2 + " to: "
+								+ (pointy + (float) Math.sin(Math.toRadians(angle)) * sfert));
+
+						c.drawLine(ax2, ay2, pointx + (float) Math.cos(Math.toRadians(180 - angle))
+								* sfert, pointy + (float) Math.sin(Math.toRadians(180 - angle))
+								* sfert, p);
+
+						ax2 = pointx + (float) Math.cos(Math.toRadians(angle)) * sfert;
+						ay2 = pointy + (float) Math.sin(Math.toRadians(angle)) * sfert;
+						ax = pointx;
+						ay = pointy;
 					}
-					int al_doilea = 0;
-
-					for (int k = 1; k < SharedVariables.directions.size(); k++) {
-
-						String a = SharedVariables.directions.get(k).first;
-						float offset = 0;
-
-						if (a.startsWith("Turn") || a.startsWith("Slight") || a.startsWith("Take")) {
-							al_doilea++;
-							if (al_doilea == 2)
-								break;
-
-							float curve = (float) angleBetween(SharedVariables.points.get(0),
-									SharedVariables.points.get(SharedVariables.directions
-											.get(k - 1).second + 1),
-									SharedVariables.points.get(SharedVariables.directions
-											.get(k - 1).second));
-
-							System.out.println(a.substring(a.indexOf("<b>") + 3, a.length()));
-
-							if (a.substring(a.indexOf("<b>") + 3, a.length()).startsWith("left")) {
-
-								if (curve > 10 && curve < 100) {
-
-									float ad = (float) 75 / 100;
-									float ab = (float) 57.5 / 100;
-									c.drawLine(ax - sfert, ay, ax - ad * sfert, ay - ab * sfert, p);
-									c.drawLine(ax - sfert, ay, ax - ad * sfert, ay - ab * sfert,
-											paintBlur);
-
-									ad = (float) 75 / 100;
-									ab = (float) 57.5 / 100;
-									float add = (float) 50 / 100;
-									float abb = (float) 80 / 100;
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - add * sfert,
-											ay - sfert, p);
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - add * sfert,
-											ay - sfert, paintBlur);
-
-									ad = (float) 50 / 100;
-									ab = (float) 80 / 100;
-									add = (float) 25 / 100;
-									abb = (float) 127 / 100;
-									c.drawLine(ax - ad * sfert, ay - sfert, ax - add * sfert, ay
-											- abb * sfert, p);
-									c.drawLine(ax - ad * sfert, ay - sfert, ax - add * sfert, ay
-											- abb * sfert, paintBlur);
-
-									ad = (float) 25 / 100;
-									ab = (float) 127 / 100;
-									abb = (float) 150 / 100;
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax, ay - abb
-											* sfert, p);
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax, ay - abb
-											* sfert, paintBlur);
-
-									ab = (float) 150 / 100;
-									add = (float) 25 / 100;
-									abb = (float) 170 / 100;
-									c.drawLine(ax, ay - ab * sfert, ax + add * sfert, ay - abb
-											* sfert, p);
-									c.drawLine(ax, ay - ab * sfert, ax + add * sfert, ay - abb
-											* sfert, paintBlur);
-
-									ad = (float) 25 / 100;
-									ab = (float) 170 / 100;
-									add = (float) 50 / 100;
-									abb = (float) 180 / 100;
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, p);
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, paintBlur);
-
-									ad = (float) 50 / 100;
-									ab = (float) 180 / 100;
-									add = (float) 75 / 100;
-									abb = (float) 195 / 100;
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, p);
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, paintBlur);
-
-									ad = (float) 75 / 100;
-									ab = (float) 195 / 100;
-									abb = (float) 200 / 100;
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + sfert, ay
-											- abb * sfert, p);
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + sfert, ay
-											- abb * sfert, paintBlur);
-
-									ay -= sfert;
-									ax += sfert;
-									offset = sfert;
-
-								}
-							}
-							else {
-
-								System.out.println("Am intrat aici" + curve);
-
-								if ((curve > -10 && curve > -100) || (curve > 200 && curve < 300)) {
-
-									float ad = (float) 75 / 100;
-									float ab = (float) 40 / 100;
-									System.out.println(ad);
-									System.out.println(ab);
-									c.drawLine(ax + sfert, ay, ax + ad * sfert, ay - ab * sfert, p);
-									c.drawLine(ax + sfert, ay, ax + ad * sfert, ay - ab * sfert,
-											paintBlur);
-
-									ad = (float) 75 / 100;
-									ab = (float) 40 / 100;
-									float add = (float) 50 / 100;
-									float abb = (float) 80 / 100;
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, p);
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, paintBlur);
-
-									ad = (float) 50 / 100;
-									ab = (float) 80 / 100;
-									add = (float) 25 / 100;
-									abb = (float) 104 / 100;
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, p);
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax + add * sfert,
-											ay - abb * sfert, paintBlur);
-
-									ad = (float) 25 / 100;
-									ab = (float) 104 / 100;
-									abb = (float) 138 / 100;
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax, ay - abb
-											* sfert, p);
-									c.drawLine(ax + ad * sfert, ay - ab * sfert, ax, ay - abb
-											* sfert, paintBlur);
-
-									ab = (float) 138 / 100;
-									add = (float) 25 / 100;
-									abb = (float) 163 / 100;
-									c.drawLine(ax, ay - ab * sfert, ax - add * sfert, ay - abb
-											* sfert, p);
-									c.drawLine(ax, ay - ab * sfert, ax - add * sfert, ay - abb
-											* sfert, paintBlur);
-
-									ad = (float) 25 / 100;
-									ab = (float) 163 / 100;
-									add = (float) 50 / 100;
-									abb = (float) 175 / 100;
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - add * sfert,
-											ay - abb * sfert, p);
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - add * sfert,
-											ay - abb * sfert, paintBlur);
-
-									ad = (float) 50 / 100;
-									ab = (float) 175 / 100;
-									add = (float) 75 / 100;
-									abb = (float) 193 / 100;
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - add * sfert,
-											ay - abb * sfert, p);
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - add * sfert,
-											ay - abb * sfert, paintBlur);
-
-									ad = (float) 75 / 100;
-									ab = (float) 193 / 100;
-									abb = (float) 200 / 100;
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - sfert, ay
-											- abb * sfert, p);
-									c.drawLine(ax - ad * sfert, ay - ab * sfert, ax - sfert, ay
-											- abb * sfert, paintBlur);
-
-									ay -= sfert;
-									ax -= sfert;
-									offset = -sfert;
-
-								}
-							}
-
-							if (offset == 0) {
-
-								for (int i = SharedVariables.directions.get(k - 1).second; i < SharedVariables.directions
-										.get(k).second - 1; i++) {
-									float di = distance(
-											(float) SharedVariables.points.get(i).latitude,
-											(float) SharedVariables.points.get(i).longitude,
-											(float) SharedVariables.points.get(i + 1).latitude,
-											(float) SharedVariables.points.get(i + 1).longitude);
-									System.out.println("Distance is " + di);
-									float angle = (float) angleBetween(
-											SharedVariables.points.get(0),
-											SharedVariables.points.get(i + 1),
-											SharedVariables.points.get(i));
-									System.out.println("Angle is " + angle + " cos = "
-											+ Math.cos(Math.toRadians(90 - angle)) + ", sin = "
-											+ Math.sin(Math.toRadians(90 - angle)));
-									c.drawLine(
-											ax - sfert,
-											ay,
-											(float) (ax
-													+ (ca * Math.cos(Math.toRadians(90 - angle)) * di) - sfert),
-											(float) (ay + (ca
-													* Math.sin(Math.toRadians(90 - angle)) * di)),
-											p);
-									c.drawLine(
-											ax - sfert,
-											ay,
-											(float) (ax
-													+ (ca * Math.cos(Math.toRadians(90 - angle)) * di) - sfert),
-											(float) (ay + (ca
-													* Math.sin(Math.toRadians(90 - angle)) * di)),
-											paintBlur);
-									c.drawLine(
-											ax + sfert,
-											ay,
-											(float) (ax
-													+ (ca * Math.cos(Math.toRadians(90 - angle)) * di) + sfert),
-											(float) (ay + (ca
-													* Math.sin(Math.toRadians(90 - angle)) * di)),
-											p);
-									c.drawLine(
-											ax + sfert,
-											ay,
-											(float) (ax
-													+ (ca * Math.cos(Math.toRadians(90 - angle)) * di) + sfert),
-											(float) (ay + (ca
-													* Math.sin(Math.toRadians(90 - angle)) * di)),
-											paintBlur);
-									ax = (float) (ax + ca * Math.cos(Math.toRadians(90 - angle))
-											* di);
-									ay = (float) (ay + ca * Math.sin(Math.toRadians(90 - angle))
-											* di);
-								}
-
-							}
-							else {
-
-								for (int i = SharedVariables.directions.get(k - 1).second; i < SharedVariables.directions
-										.get(k).second - 1; i++) {
-
-									float di = distance(
-											(float) SharedVariables.points.get(i).latitude,
-											(float) SharedVariables.points.get(i).longitude,
-											(float) SharedVariables.points.get(i + 1).latitude,
-											(float) SharedVariables.points.get(i + 1).longitude);
-									System.out.println("Distance is " + di);
-									float angle = (float) angleBetween(
-											SharedVariables.points.get(0),
-											SharedVariables.points.get(i + 1),
-											SharedVariables.points.get(i));
-									System.out.println("Angle is " + angle + " cos = "
-											+ Math.cos(Math.toRadians(90 - angle)) + ", sin = "
-											+ Math.sin(Math.toRadians(90 - angle)));
-									c.drawLine(
-											ax,
-											ay + offset,
-											(float) (ax + (ca
-													* Math.cos(Math.toRadians(90 - angle)) * di)),
-											(float) (ay
-													+ (ca * Math.sin(Math.toRadians(90 - angle)) * di) + offset),
-											p);
-									c.drawLine(
-											ax,
-											ay + offset,
-											(float) (ax + (ca
-													* Math.cos(Math.toRadians(90 - angle)) * di)),
-											(float) (ay
-													+ (ca * Math.sin(Math.toRadians(90 - angle)) * di) + offset),
-											paintBlur);
-									c.drawLine(
-											ax,
-											ay - offset,
-											(float) (ax + (ca
-													* Math.cos(Math.toRadians(90 - angle)) * di)),
-											(float) (ay
-													+ (ca * Math.sin(Math.toRadians(90 - angle)) * di) - offset),
-											p);
-									c.drawLine(
-											ax,
-											ay - offset,
-											(float) (ax + (ca
-													* Math.cos(Math.toRadians(90 - angle)) * di)),
-											(float) (ay
-													+ (ca * Math.sin(Math.toRadians(90 - angle)) * di) - offset),
-											paintBlur);
-									ax = (float) (ax + ca * Math.cos(Math.toRadians(90 - angle))
-											* di);
-									ay = (float) (ay + ca * Math.sin(Math.toRadians(90 - angle))
-											* di);
-								}
-							}
-						}
-					}
-
 					holder.unlockCanvasAndPost(c);
 					SharedVariables.venit = false;
 					SharedVariables.take = true;
